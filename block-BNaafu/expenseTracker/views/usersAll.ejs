@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title >All Users</title>
+    <link rel='stylesheet' href='../output.css'>
+  </head>
+  <body>
+    <button class=" bg-red-500 hover:bg-red-700 text-white font-bold py-2 p-12 m-4 absolute left-2 top-4"> <a href="/">HOME</a></button> </body>
+
+    <h1 class="font-serif text-4xl text-center p-16">You Are Viewing All Users</h1>
+    <% if(message) { %>
+        <h4><%= message %></h4>
+    <% } %>
+
+    <div class="p-2 m-4 flex justify-center flex-wrap">
+       <% users.forEach(user => { %>
+        <div class="p-4 m-4 w-4/12 divide-solid border-2 border-grey-400 flex flex-col justify-start">
+            <h3><span class="m-6 font-bold text-red-800">NAME: </span> <span class="underline font-bold"><%= user.fname %> <%= user.lname %></h3>
+            <p><span class="m-6 font-bold text-red-800">EMAIL: </span> <%= user.email %></p>
+            <p><span class="m-6 font-bold text-red-800">BLOCKED: </span> <%= user.blocked %></p>
+            <div class="flex justify-between">
+                <a href="/users/<%=user._id%>/block"><button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 m-4 rounded">BLOCK</button></a>
+            <a href="/users/<%=user._id%>/unblock"><button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 m-4 rounded">UNBLOCK</button></a>
+            </div>
+            
+        </div>
+       <% }) %>
+    </div>
+  </body>
+</html>

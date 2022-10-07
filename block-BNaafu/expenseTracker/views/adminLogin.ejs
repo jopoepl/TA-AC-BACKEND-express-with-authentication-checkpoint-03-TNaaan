@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title >Admin Login</title>
+    <link rel='stylesheet' href='../output.css'>
+  </head>
+  <body>
+    <h1 class="font-serif text-4xl text-center p-16">Admin Login Page</h1>
+    <button class=" bg-red-500 hover:bg-red-700 text-white font-bold py-2 p-12 m-4 absolute left-2 top-4"> <a href="/">HOME</a></button> </body>
+
+    <div class="flex justify-center">
+        <form class="p-6 divide-solid border-2 border-grey-400 flex flex-col w-96" action="/admin/login" method="POST">
+            <% if(message) { %>
+                <div class="text-center text-red-400"> <%= message %></div>
+                <% } %>
+            <label class="w-full my-3" for="fname">Email
+                <input class="my-2 w-full p-1 divide-solid border-2 border-grey-200" type="email" placeholder="Email" name="email">
+            </label>
+            <label class="w-full my-3" for="lname">Password
+                <input class="my-2 w-full p-1 divide-solid border-2 border-grey-200 " type="password" placeholder="Password" name="password">
+            </label>
+            <button class=" bg-red-500 hover:bg-red-700 text-white font-bold py-2 p-12 m-4">Admin Login</button>
+        </form>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,87 @@
+<% include partials/header %>
+<% if(message){ %>
+  <h2 class="text-center text-red-800"><%= message %></h2>
+<% } %>
+    <h1 class="font-serif text-4xl text-center p-16">Welcome to the User Dashboard, <%= name %></h1>
+    <form class="p-8" action="/users/dashboard/filter" method="GET">
+    <div class="md:w-2/3 shadow p-5 rounded-lg bg-white" style="width: 80%; text-align: center; margin: 0 auto;">
+    
+      <div class="flex items-center justify-between mt-4">
+        <p class="m-4 text-2xl text-blue-600 font-bold">
+        Filters
+        </p>
+    
+        <a href="/users/dashboard"><button class="bg-blue-500 text-white rounded m-4 text-white-600 active:bg-blue-600 font-bold px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm font-medium rounded-md">
+        Reset Filter
+        </button> </a>
+      </div>
+    
+      <div>
+      <div class="grid-custom">
+        <select name="incSource" class="px-4 py-3 w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-sm">
+          <option value="">All Income Sources</option>
+          <% incCategories.forEach(income => { %>
+            <option value="<%= income.name %>"><%= income.name %></option>
+          <% }) %>
+        </select>
+    
+        <select name="expSource" class="px-4 py-3 w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-sm">
+          <option value="">Expense Type</option>
+          <% expCategories.forEach(expense => { %>
+            <option value="<%= expense.name %>"><%= expense.name %></option>
+          <% }) %>
+        </select>
+      </div>
+       
+       
+        <button class="bg-green-500 text-white w-full active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 mt-8" type="submit">SUBMIT</button>
+      
+      </div>
+      </div>
+    </form>
+
+    <div id="container" style="width: 100%; height: 500px; text-align: center">
+      
+      <div id="mydiv" data-data='<%= data %>'></div>
+      <div id="mydivExp" data-exp='<%= totalExp %>'></div>
+      <div id="mydivInc" data-inc='<%= totalInc %>'></div>
+      <% console.log(totalExp, totalInc, "totals") %>
+
+
+     <script>
+      anychart.onDocumentReady(function() {
+// set the data
+// let data = (document.getElementById('mydiv').dataset[`test`])
+let data = JSON.parse(document.getElementById('mydiv').dataset[`data`])
+let totalInc = (document.getElementById('mydivInc').dataset.inc)
+let totalExp = (document.getElementById('mydivExp').dataset.exp)
+console.log("data", totalInc, totalExp)
+let balanceInc = totalInc - totalExp
+data.push({x: "Income Left", value: balanceInc})
+var chart = anychart.pie();
+
+
+//Set font sizes
+chart.legend().itemsLayout('vertical');
+chart.legend().fontSize('17px');
+chart.legend().fontWeight('400');
+chart.legend().fontStyle('italic');
+chart.legend().fontColor('333');
+
+
+// set the chart title
+chart.title("Expenses By Category");
+
+// add the data
+chart.data(data);
+
+// display the chart in the container
+chart.container('container');
+chart.draw();
+
+});
+     </script>
+    </div>
+       
+  </body>
+</html>

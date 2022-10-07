@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title >Admin Signup</title>
+    <link rel='stylesheet' href='../output.css'>
+  </head>
+  <body>
+    <button class=" bg-red-500 hover:bg-red-700 text-white font-bold py-2 p-12 m-4 absolute left-2 top-4"> <a href="/">HOME</a></button> </body>
+
+    <h1 class="font-serif text-4xl text-center p-16">Create A New Admin Account</h1>
+    <div class="flex justify-center">
+        <form class="p-6 divide-solid border-2 border-grey-400 flex flex-col w-96" action="/admin/signup" method="POST">
+            <label class="w-full my-3" for="fname">First Name
+                <input class="my-2 w-full p-1 divide-solid border-2 border-grey-200" type="text" placeholder="First Name" name="fname">
+            </label>
+            <label class="w-full my-3" for="lname">Last Name
+                <input class="my-2 w-full p-1 divide-solid border-2 border-grey-200 " type="text" placeholder="Last Name" name="lname">
+            </label>
+            <label class="w-full my-3" for="email">Email
+                <input class="my-2 w-full p-1 divide-solid border-2 border-grey-200 " type="email" placeholder="Email" name="email">
+            </label>
+            <label class="w-full my-3" for="password">Password
+                <input class="my-2 w-full p-1 divide-solid border-2 border-grey-200 " type="password" placeholder="Create Password" name="password">
+            </label>
+            <button class=" bg-red-500 hover:bg-red-700 text-white font-bold py-2 p-12 m-4">Add Admin</button>
+        </form>
+    </div>
+
+  </body>
+</html>
