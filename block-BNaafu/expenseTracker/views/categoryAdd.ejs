@@ -1,0 +1,20 @@
+<% include partials/header %>
+    <h1 class="font-serif text-4xl text-center p-16">Create A New Category</h1>
+    <div class="flex justify-center">
+        <form class="p-6 divide-solid border-2 border-grey-400 flex flex-col w-96" action="/users/category/add" method="POST">
+         
+          <label class="w-full my-3" for="name">Category
+              <input class="my-2 w-full p-1 divide-solid border-2 border-grey-200" type="text" placeholder="Category Name" name="name">
+          </label>
+          <select name="categoryType" id="">
+            <option value="">SELECT TYPE</option>
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+          </select>
+            
+            <button class=" bg-red-500 hover:bg-red-700 text-white font-bold py-2 p-12 m-4 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">Add Category</button>
+        </form>
+    </div>
+
+  </body>
+</html>

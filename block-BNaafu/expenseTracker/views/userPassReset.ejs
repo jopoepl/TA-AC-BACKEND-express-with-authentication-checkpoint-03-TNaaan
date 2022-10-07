@@ -1,0 +1,15 @@
+<% include partials/header %>
+    <h1 class="font-serif text-4xl text-center p-16">RESET YOUR PASSWORD</h1>
+    <div class="flex justify-center">
+        <form class="p-6 divide-solid border-2 border-grey-400 flex flex-col w-96" action="/users/password/reset" method="POST">
+            <label class="w-full my-3" for="lname">Old Password
+                <input class="my-2 w-full p-1 divide-solid border-2 border-grey-200 " type="password" placeholder="Password" name="oldpassword">
+            </label>
+            <label class="w-full my-3" for="lname">New Password
+                <input class="my-2 w-full p-1 divide-solid border-2 border-grey-200 " type="password" placeholder="Password" name="password">
+            </label>
+            <button class=" bg-green-500 hover:bg-green-700 text-white font-bold py-2 p-12 m-4">Change Password</button>
+        </form>
+    </div>
+  </body>
+</html>
