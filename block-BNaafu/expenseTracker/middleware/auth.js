@@ -12,12 +12,35 @@ module.exports = {
     loggedInUser: (req, res, next) => {
         if(req.session.userid) {
             next()
-        } if(req.session.passport.user){
+        } else if(req.session.passport){
             next()
         } else {
-            req.flash("error", "You Need To Be Logged In To View This Page")
             res.redirect(`/users/login`)
         }
+    },
+    assignSession: (req, res, next) => {
+  var name;
+  var message;
+
+  try{
+    passport = req.session.passport.user.id
+  } catch {
+    passport = undefined
+  }
+  if(passport !== undefined) {
+    res.locals.id = passport
+  } else {
+    res.locals.id = req.session.userid
+  }
+
+  if(req.session.passport) {
+     res.locals.user = req.session.passport.user.name
+  } else {
+     res.locals.user = req.session.name
+  }
+  console.log( res.locals, "RES LOCAL")
+
+  next()
     },
     blockedUser: (req, res, next) => {
         let userId = req.session.userId

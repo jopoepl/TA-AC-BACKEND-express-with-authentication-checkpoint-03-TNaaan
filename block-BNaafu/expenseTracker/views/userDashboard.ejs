@@ -11,9 +11,8 @@
         Filters
         </p>
     
-        <a href="/users/dashboard"><button class="bg-blue-500 text-white rounded m-4 text-white-600 active:bg-blue-600 font-bold px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm font-medium rounded-md">
-        Reset Filter
-        </button> </a>
+        <a class="bg-blue-500 text-white rounded m-4 text-white-600 active:bg-blue-600 font-bold px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm font-medium rounded-md" href="/users/dashboard/">
+        Reset Filter</a>
       </div>
     
       <div>
@@ -24,13 +23,24 @@
             <option value="<%= income.name %>"><%= income.name %></option>
           <% }) %>
         </select>
+        <div>
+          <label for="points">DATE FROM:
+            <input type="date" name="dateFrom" min="1-1-2022" max="31-12-2022">
+          </label>
+          <label class="mx-4" for="points">DATE TO:
+            <input type="date"  name="dateTo" min="1-1-2022" max="31-12-2022">
+          </label>
+        </div>
+       
+
     
         <select name="expSource" class="px-4 py-3 w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-sm">
-          <option value="">Expense Type</option>
+          <option value="">All Expenses</option>
           <% expCategories.forEach(expense => { %>
             <option value="<%= expense.name %>"><%= expense.name %></option>
           <% }) %>
         </select>
+
       </div>
        
        
@@ -45,8 +55,6 @@
       <div id="mydiv" data-data='<%= data %>'></div>
       <div id="mydivExp" data-exp='<%= totalExp %>'></div>
       <div id="mydivInc" data-inc='<%= totalInc %>'></div>
-      <% console.log(totalExp, totalInc, "totals") %>
-
 
      <script>
       anychart.onDocumentReady(function() {
@@ -55,7 +63,7 @@
 let data = JSON.parse(document.getElementById('mydiv').dataset[`data`])
 let totalInc = (document.getElementById('mydivInc').dataset.inc)
 let totalExp = (document.getElementById('mydivExp').dataset.exp)
-console.log("data", totalInc, totalExp)
+console.log("data", data)
 let balanceInc = totalInc - totalExp
 data.push({x: "Income Left", value: balanceInc})
 var chart = anychart.pie();
