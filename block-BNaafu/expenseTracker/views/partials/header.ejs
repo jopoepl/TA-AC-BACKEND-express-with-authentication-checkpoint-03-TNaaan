@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title >Expense Tracker</title>
+    <link rel='stylesheet' href='/stylesheets/output.css'>
+    <script src="https://cdn.anychart.com/releases/8.0.1/js/anychart-core.min.js"></script>
+      <script src="https://cdn.anychart.com/releases/8.0.1/js/anychart-pie.min.js"></script>
+  </head>
+  <body>
+    <div class="p-8 w-full flex justify-between item-center text-center">
+      <div class="flex justify-between item-center text-center">
+        <a href="/users/dashboard">
+          <button class="bg-green-500 text-white w-full active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"> DASHBOARD</button>
+        </a> 
+        <a href="/users/onboarding">
+          <button class="mx-8 bg-green-500 text-white w-full active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"> ONBOARDING</button>
+        </a> 
+      </div>
+      
+    
+    <div class="flex justify-between item-center text-center">
+          <% if(name){ %>
+            <a href="/users/password/reset">
+                <button class="mx-8 bg-blue-500 text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"> RESET PASSWORD</button>
+              </a> 
+            <a href="/users/logout">
+                <button class="mx-8 bg-red-500 text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"> LOGOUT</button>
+              </a> 
+        </div>
+
+         <%  } else { %>
+            <a href="/users/login">
+                <button class="mx-8 bg-blue-500 text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"> LOGIN</button>
+              </a> 
+            <a href="/users/signup">
+                <button class="mx-8 bg-red-500 text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"> SIGNUP</button>
+              </a> 
+        </div>
+
+          <% } %>
+          
+    </div>
+  

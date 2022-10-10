@@ -1,0 +1,18 @@
+<% include partials/header %>
+    <h1 class="font-serif text-4xl text-center p-16">User Login Page</h1>
+    <div class="flex justify-center">
+        <form class="p-6 divide-solid border-2 border-grey-400 flex flex-col w-96" action="/users/login" method="POST">
+            <label class="w-full my-3" for="fname">Email
+                <input class="my-2 w-full p-1 divide-solid border-2 border-grey-200" type="email" placeholder="Email" name="email">
+            </label>
+            <label class="w-full my-3" for="lname">Password
+                <input class="my-2 w-full p-1 divide-solid border-2 border-grey-200 " type="password" placeholder="Password" name="password">
+            </label>
+            <button class=" bg-green-500 hover:bg-green-700 text-white font-bold py-2 p-12 m-4">User Login</button>
+            <button class=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 p-12 m-4"><a href="/auth/github">Login via Github</a></button>
+            <button class=" bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 p-12 m-4"><a href="/auth/google">Login via Google</a></button>
+
+        </form>
+    </div>
+  </body>
+</html>
