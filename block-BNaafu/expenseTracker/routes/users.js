@@ -9,7 +9,7 @@ var bcrypt = require(`bcrypt`)
 var Category = require(`../models/category`)
 var Expense = require(`../models/expense`)
 var Income = require(`../models/income`);
-const { loggedInUser } = require('../middleware/auth');
+const { loggedInUser, assignSession } = require('../middleware/auth');
 const expense = require('../models/expense');
 
 
@@ -36,45 +36,11 @@ router.get('/failure', function(req, res, next) {
 })
 
 
-let createChart = function(expenses) {
-
-  // set the data
-  console.log(data, "EXPENSES")
-  
-  var data = [];
-  expenses.forEach(expense => {
-      data.push({x: expense.name, value: expense.amount})
-    })
-  console.log(data, "data")
-  // create the chart
-  var chart = anychart.pie();
-  
-  // set the chart title
-  chart.title("Expenses by Category");
-  
-  // add the data
-  chart.data(data);
-  
-  // display the chart in the container
-  chart.container('container');
-  chart.draw();
-  
-  }
 
 /* GET - LOADING DASHBOARD PAGE*/
 
-router.get('/dashboard', loggedInUser, function(req, res, next) {
-  console.log(req.session, "USER PASS SESSION")
-  var name;
-  var message;
-  var userid = req.session.userid
-
-  if(req.session.passport) {
-     name = req.session.passport.user.name
-  } else {
-     name = req.session.name
-  }
-  console.log(req.session.flash)
+router.get('/dashboard', loggedInUser, assignSession, function(req, res, next) {
+  
   //handling req flash 
   if(req.session.flash == undefined){
      message = null
@@ -93,16 +59,24 @@ router.get('/dashboard', loggedInUser, function(req, res, next) {
   let expCategory;
   let incCategory;
   let stringifiedData;
-  Expense.find({user:userid}).then((expenses) => {
-    console.log(expenses, "expenses")
-    expenses1 = expenses
-    expenses.forEach( function(expense){
+  let id = res.locals.id
+  let name = res.locals.user.name
+
+
+  Expense.find({user:id}).then((expense) => {
+    expenses1 = expense
+    console.log(expenses1, "expenses1")
+
+    expenses1.forEach( function(expense){
       data.push({x: expense.name, value: expense.amount})
       totalExp += expense.amount
       
+      
     })
+    console.log(data, "data push")
+
   }).then((expenses) => {
-    Income.find({user:userid}).then((incomes) => {
+    Income.find({user:id}).then((incomes) => {
       incomes1 = incomes
     }).then(() => {
       incomes1.forEach(function(income){
@@ -110,17 +84,15 @@ router.get('/dashboard', loggedInUser, function(req, res, next) {
       })
     })
       .then(() => {
+        console.log("DATA fINAL", data)
         Category.find({}).exec((err, categories) => {
           expCategory =  categories.filter(category => category.categoryType === 'expense')
            incCategory =  categories.filter(category => category.categoryType === 'income')
           // console.log(expCategory, incCategory, "ALL VAR")
           stringifiedData = JSON.stringify(data)    
           res.render(`userDashboard`, {name: name, message: message, expCategories: expCategory, expenses: expenses1,  incCategories: incCategory, incomes: incomes1, data: stringifiedData, totalExp: totalExp, totalInc: totalInc})
-
         })
-    
       })  
-      
       })
 
     })
@@ -263,7 +235,7 @@ router.get(`/onboarding`, loggedInUser, (req, res, next) => {
     var name = req.session.passport.user.name
   }
   
-  res.render(`userOnboarding`, {name} )
+  res.render(`userOnboarding`, {name: name} )
 })
 
 /* GET -- ADDING INCOME */
@@ -305,7 +277,8 @@ router.get(`/expense/add`, (req, res, next) => {
 
 /* POST -- ADDING EXPENSE */
 router.post(`/expense/add`, (req, res, next) => {
-  let id = req.session.userid
+  let id = 
+  req.session.user === undefined ? req.session.passport.user.id : req.session.user.id;
   req.body.user = id
   Expense.create(req.body, (err, expense) => {
     let expenseId = expense._id
@@ -416,77 +389,146 @@ router.get(`/:id/unblock`, (req,res,next) => {
 
 
 /* HANDLING FILTERS - DASHBOARD*/
-
-router.get(`/dashboard/filter`, function(req, res, next){
-  let query = req.query
-  let id;
-  console.log(query, "QUERY")
-  try{
-    passport = req.session.passport.user.id
-  } catch {
-    passport = undefined
-  }
-  if(passport !== undefined) {
-    id = passport
-  } else {
-    id = req.session.userid
-  }
-
-  var name;
-  var message;
-  var userid = req.session.userid
-
-  if(req.session.passport) {
-     name = req.session.passport.user.name
-  } else {
-     name = req.session.name
-  }
-  //handling req flash 
-  if(req.session.flash == undefined){
-     message = null
-  } else if (Object.keys(req.session.flash).length !== 0){
-    message = req.session.flash.message
-  } else {
-    message = null
-  }
-  
+router.get(`/dashboard/filter`,assignSession, function(req, res, next){
+  let data = []
+  let totalExp = 0;
+  let totalInc = 0
+  var expenses1;
+  let incomes1;
+  let expCategory;
+  let incCategory;
+  let stringifiedData;
+  let id = res.locals.id
+  let name = res.locals.user
+  let incSource = req.query.incSource || /.*/g
+  console.log(incSource, "incSource")
   // let id = 
-  // typeof(req.session.user.id) == undefined ? req.session.passport.user.id : req.session.user.id;
+  // req.session.user === undefined ? req.session.passport.user.id : req.session.user.id
+  // let name = req.locals.user
+  let dateFrom =  new Date(req.query.dateFrom).toJSON()
+  // req.query.dateFrom ? new Date(req.query.dateFrom) : new Date("2022-01-01") ;
+  let dateTo = new Date(req.query.dateTo).toJSON()
+  // req.query.dateTo ? new Date(req.query.dateTo) : new Date();
+  console.log(req.query, "id")
+
+  User.findOne({_id: id}).populate({
+    "path": "expense",
+    "match": {category: req.query.expSource, date: {$gt: dateFrom, $lt: dateTo}}
+  }).populate({
+    "path": "income",
+    "match": {category: incSource, date: {$gt: dateFrom, $lte: dateTo}},
+  }).exec((err, user) => {
+    console.log(user, "filtered exp", "filtered inc")
+
+    Category.find({}).then( async (categories) => {
+      expCategory =  categories.filter(category => category.categoryType === 'expense')
+      incCategory =  categories.filter(category => category.categoryType === 'income')
+      incomes1 = user.income
+      await incomes1.forEach(function(income){
+        totalInc += income.amount
+      })
+      expenses1 = user.expense
+      expenses1.forEach( function(expense){
+        data.push({x: expense.name, value: expense.amount})
+        totalExp += expense.amount
+      })
+     stringifiedData = JSON.stringify(data)  
+     console.log(stringifiedData, "STR DATA")
+      res.render(`userDashboard`, {name: name, message: `DATE RANGE: ${dateFrom} to ${dateTo}`, expCategories: expCategory, expenses: expenses1,  incCategories: incCategory, incomes: incomes1, data: stringifiedData, totalExp: totalExp, totalInc: totalInc})
 
 
-  let incSource = req.query.incSource;
-  let expSource = req.query.expSource
-  let categoryType = req.query.categoryType
-  User.findOne({_id: id}).populate(`income`).populate(`expense`).exec((err, user) => {
-    console.log(user, "populated user")
-    //handling no income selected === ALL Income
-    if(incSource === ""){
-      var incomeFiltered =  user.income
-    } else {
-      var incomeFiltered =  user.income.filter(income => income.category === incSource)
-    }
-   let expFiltered =  user.expense.filter(expense => expense.category === expSource)
-   //populating data with filtered values
-   let data = [];
-   let totalExp =0;
-   let totalInc = 0;
-   expFiltered.forEach(expense => {
-    totalExp += expense.amount
-    data.push({x: expense.name, value: expense.amount})
-   })
-   incomeFiltered.forEach(income => {
-    totalInc += income.amount
-   })
-   console.log(incomeFiltered, expFiltered, "filtered")
-         Category.find({}).exec((err, categories) => {
-        if(err) next(err)
-        let expCategory = categories.filter(category => category.categoryType === 'expense')
-        let incCategory = categories.filter(category => category.categoryType === 'income')
+    })
 
-        res.render(`userDashboard`, {name: name, message: message, expCategories: expCategory,  incCategories: incCategory, data: JSON.stringify(data), totalExp: `${totalExp}`,totalInc: `${totalInc}`})
-        })
   })
 })
+
+
+
+
+// router.get(`/dashboard/filter`, function(req, res, next){
+//   let query = req.query
+//   let id;
+//   console.log(query, "QUERY")
+//   try{
+//     passport = req.session.passport.user.id
+//   } catch {
+//     passport = undefined
+//   }
+//   if(passport !== undefined) {
+//     id = passport
+//   } else {
+//     id = req.session.userid
+//   }
+
+//   var name;
+//   var message;
+//   var userid = req.session.userid
+
+//   if(req.session.passport) {
+//      name = req.session.passport.user.name
+//   } else {
+//      name = req.session.name
+//   }
+//   //handling req flash 
+//   if(req.session.flash == undefined){
+//      message = null
+//   } else if (Object.keys(req.session.flash).length !== 0){
+//     message = req.session.flash.message
+//   } else {
+//     message = null
+//   }
+  
+//   // let id = 
+//   // typeof(req.session.user.id) == undefined ? req.session.passport.user.id : req.session.user.id;
+
+
+//   let incSource = req.query.incSource;
+//   let expSource = req.query.expSource
+//   let fromDate = req.query.dateFrom
+//   let toDate = req.query.dateTo
+//   let categoryType = req.query.categoryType
+//   User.findOne({_id: id}).populate(`income`).populate(`expense`).exec((err, user) => {
+//     console.log(user, "populated user")
+//     //handling no income selected === ALL Income
+//     if(incSource === ""){
+//       var incomeFiltered =  user.income
+//     } else {
+//       var incomeFiltered =  user.income.filter(income => income.category === incSource)
+//     }
+//    var expFiltered; 
+//   // =  user.expense.filter(expense => expense.category === expSource)
+//    //populating data with filtered values
+//    let data = [];
+//    let totalExp =0;
+//    let totalInc = 0;
+
+//     Expense.find({$match: {user: id, date: {$gte: fromDate}, date: {$lt: toDate}}})
+//     .exec((err, (expenses) => {
+//       expFiltered = expenses
+//       console.log(expFiltered, "expFiltered")
+//       expFiltered.forEach(expense => {
+//         totalExp += expense.amount
+//         data.push({x: expense.name, value: expense.amount})
+//        })
+//        incomeFiltered.forEach(income => {
+//         totalInc += income.amount
+//        })
+//              Category.find({}).exec((err, categories) => {
+//             if(err) next(err)
+//             let expCategory = categories.filter(category => category.categoryType === 'expense')
+//             let incCategory = categories.filter(category => category.categoryType === 'income')
+    
+//             res.render(`userDashboard`, {name: name, message: message, expCategories: expCategory,  incCategories: incCategory, data: JSON.stringify(data), totalExp: `${totalExp}`,totalInc: `${totalInc}`})
+//             })
+//       console.log(expFiltered, "inside exp find")
+//     })
+//     )
+
+   
+//   })
+
+
+// })
 
 
 
